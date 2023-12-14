@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+{% block title  %}Авторизация{% endblock %}
+{% block content  %}
+<style>
+
+</style>
+{% include 'panel/menu.html' %}
+<div style="display: flex">
+    <div style="width: 50%">
+        <h2>Доступные команды</h2>
+    </div>
+    <div style="width: 50%">
+        <h2>Мои команды</h2>
+        <ul>
+            {% for team in teams %}
+                <li><a href="/command/{{team.id}}">{{team.TeamName}}</a></li>
+            {% endfor %}
+        </ul>
+
+        <h2>Добавить команду</h2>
+        <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button>Добавить</button>
+    </form>
+    </div>
+</div>
+
+
+{% endblock %}

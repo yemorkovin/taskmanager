@@ -1,0 +1,8 @@
+{% extends 'main.html' %}
+{% block title  %}Главная страница{% endblock %}
+{% block content  %}
+{% if 'email' in request.session %}
+{% include 'panel/menu.html' %}
+{% endif %}
+<h1 align="center">Учебная версия Task Manager</h1>
+{% endblock %}

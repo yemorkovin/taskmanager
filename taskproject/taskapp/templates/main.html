@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock %}</title>
+    <link rel="stylesheet" href="/static/app.css" >
+</head>
+<body>
+    <header class="header">
+        <h2 align="center">Task manager</h2>
+        <ul class="menu">
+            {% if not 'email' in request.session %}
+            <li>
+                <a href="{% url 'registration_view' %}">
+                    Регистрация
+                </a>
+            </li>
+             <li>
+                <a href="{% url 'auth_view' %}">
+                    Авторизация
+                </a>
+            </li>
+            {% endif %}
+            {% if 'email' in request.session %}
+            <li>
+                <a href="{% url 'logout' %}">
+                    Выход
+                </a>
+            </li>
+            {% endif %}
+            <li>
+                <a href="{% url 'reviews' %}">
+                    Отзывы
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'subscribers' %}">
+                    Подписка
+                </a>
+            </li>
+        </ul>
+    </header>
+    <main class="content">
+    {% block content %} {% endblock %}
+    </main>
+    <footer class="footer">
+        <p align="center">Task manager 2023</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+{% block title  %}Подписка{% endblock %}
+{% block content  %}
+<style>
+    ul{
+            padding: 5px 10px;
+            display: block;
+            list-style: none;
+            text-align: center;
+            font-weight: bold;
+        }
+        ul li{
+            margin-top: 10px;
+        }
+</style>
+<h2 align="center">Подписка</h2>
+<div class="content_1">
+        <div class="cont_item">
+            <div class="rel_item">
+                <h2 class="red">Начальный</h2>
+                <p class="price">1000 руб</p>
+                <p class="per">каждый месяц</p>
+                <ul>
+                    <li>1 параметр</li>
+                    <li>2 параметр</li>
+                    <li>3 параметр</li>
+                    <li>4 параметр</li>
+                </ul>
+                <button class="btn red_button">Купить</button>
+            </div>
+        </div>
+        <div class="cont_item">
+            <div class="rel_item">
+                <h2 class="orange">Средний</h2>
+                <p class="price">2000 руб</p>
+                <p class="per">каждый месяц</p>
+                <ul>
+                     <li>1 параметр</li>
+                    <li>2 параметр</li>
+                    <li>3 параметр</li>
+                    <li>4 параметр</li>
+                </ul>
+                <button class="btn orange_button">Купить</button>
+            </div>
+        </div>
+        <div class="cont_item">
+            <div class="rel_item">
+                <h2 class="blue">Максимальный</h2>
+                <p class="price">3000 руб</p>
+                <p class="per">каждый месяц</p>
+                <ul>
+                    <li>1 параметр</li>
+                    <li>2 параметр</li>
+                    <li>3 параметр</li>
+                    <li>4 параметр</li>
+                </ul>
+                <button class="btn blue_button">Купить</button>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

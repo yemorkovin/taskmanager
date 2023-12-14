@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+{% block title  %}Авторизация{% endblock %}
+{% block content  %}
+<style>
+
+</style>
+{% include 'panel/menu.html' %}
+<p><b>Команда</b> {{team.TeamName}} <b>Дата создания</b> {{team.CreationDate|date:"d-m-Y"}}</p>
+{% if role == 1 %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p align="center"><button>Создать задачу</button></p>
+</form>
+
+{% endif %}
+{% endblock %}

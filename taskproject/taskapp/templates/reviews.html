@@ -1,0 +1,16 @@
+{% extends 'main.html' %}
+{% block title  %}Отзывы{% endblock %}
+{% block content  %}
+<h2 align="center">Отзывы</h2>
+<ul>
+{% for review in reviews %}
+  <li><p><b>{{ review.author }}</b> оставил отзыв: {{ review.text }}</p></li>
+{% endfor %}
+</ul>
+<h2 align="center">Добавить отзыв</h2>
+<form method="post" align="center">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Submit</button>
+</form>
+{% endblock %}
