@@ -1,0 +1,26 @@
+{% extends 'main.html' %}
+{% block title  %}Авторизация{% endblock %}
+{% block content  %}
+<style>
+p{
+    text-align: left;
+}
+</style>
+{% include 'panel/menu.html' %}
+<div style="display: flex">
+
+    <div style="width: 100%">
+        <h2 align="center">Мои команды</h2>
+        <ul>
+            {% for team in teams %}
+                <li style="text-align: center"><a href="/command/{{team.id}}">{{team.TeamName}}</a>
+                </li>
+
+            {% endfor %}
+        </ul>
+    </form>
+    </div>
+</div>
+
+
+{% endblock %}

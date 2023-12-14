@@ -2,18 +2,50 @@
 {% block title  %}Авторизация{% endblock %}
 {% block content  %}
 <style>
-
+p{
+    text-align: left;
+}
 </style>
 {% include 'panel/menu.html' %}
 <div style="display: flex">
     <div style="width: 50%">
         <h2>Доступные команды</h2>
+        <ul>
+        {% for i in teams_all %}
+        <li>
+            <form action="{% url 'add_team_user' %}" method="post">
+                {{i.TeamName}}
+                {% csrf_token %}
+                <input type="hidden" name="id_team" value="{{i.id}}">
+                <button>Вступить</button>
+            </form>
+        </li>
+        {% endfor %}
+            </ul>
+
+
+         <h2>Команды в котороых находится</h2>
+        <ul>
+        {% for i in teams_vs %}
+        <li>
+            <form action="{% url 'delete_team_user' %}" method="post">
+                {{i.TeamName}}
+                {% csrf_token %}
+                <input type="hidden" name="id_team" value="{{i.id}}">
+                <button>Удалить</button> <a href="/command/{{i.id}}">Зайти</a>
+            </form>
+        </li>
+        {% endfor %}
+            </ul>
     </div>
     <div style="width: 50%">
         <h2>Мои команды</h2>
         <ul>
             {% for team in teams %}
-                <li><a href="/command/{{team.id}}">{{team.TeamName}}</a></li>
+                <li><a href="/command/{{team.id}}">{{team.TeamName}}</a>
+                <a href="/delete/{{team.id}}">Удалить</a>
+                </li>
+
             {% endfor %}
         </ul>
 

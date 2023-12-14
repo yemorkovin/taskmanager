@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <title>{% block title %} {% endblock %}</title>
     <link rel="stylesheet" href="/static/app.css" >
+    <script src="/static/js/jquery-3.7.1.min.js"></script>
 </head>
 <body>
     <header class="header">
         <h2 align="center">Task manager</h2>
         <ul class="menu">
+             <li>
+                <a href="/">
+                    Главная
+                </a>
+            </li>
             {% if not 'email' in request.session %}
             <li>
                 <a href="{% url 'registration_view' %}">

@@ -3,9 +3,19 @@ from  .forms import *
 from django.contrib.auth.hashers import make_password
 from .models import *
 from django.contrib.auth.hashers import check_password
+from datetime import datetime, date
 
 def index(request):
-    return render(request, 'index.html')
+    today = date.today()
+    completed_tasks_count = Task.objects.filter(Status='2', End__date=today).count()
+    completed_tasks_count_2 = Task.objects.filter( End__date=today).count()
+    print(completed_tasks_count)
+    print(completed_tasks_count_2)
+    context = {
+        'completed_tasks_count': completed_tasks_count,
+        'completed_tasks_count_2': completed_tasks_count_2
+    }
+    return render(request, 'index.html', context=context)
 
 def reg(request):
     if 'email' in request.session:
@@ -68,12 +78,16 @@ def logout(request):
         del request.session['email']
     return redirect('/')
 def panel(request):
-
-    return render(request, 'panel/panel.html')
+    user = get_object_or_404(User, Email=request.session['email'])
+    return render(request, 'panel/panel.html', {'user':user})
 
 def commandtask(request):
     user = User.objects.get(Email=request.session['email'])
-    teams = Team.objects.filter(teammember__user=user)
+    teams = Team.objects.filter(teammember__user=user, teammember__role=1)
+    teams_vs = Team.objects.filter(teammember__user=user, teammember__role=2)
+    teams_all = Team.objects.exclude(teammember__user=user)
+    #teams_all = Team.objects.filter(teammember__isnull=False).distinct()
+
     if request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
@@ -89,16 +103,97 @@ def commandtask(request):
             #return redirect('team_list')  # Замените 'team_list' на ваш URL-маршрут для списка команд
     else:
         form = TeamForm()
-    return render(request, 'panel/commandtask.html', {'form': form, 'teams': teams})
+    return render(request, 'panel/commandtask.html', {'form': form, 'teams': teams, 'teams_all': teams_all, 'teams_vs': teams_vs})
 
+def delete_team_user(request):
+    if request.method == 'POST':
+        id_team = request.POST['id_team']
+        team = get_object_or_404(Team, id=id_team)
+        user = get_object_or_404(User, Email=request.session['email'])
+        team_member = get_object_or_404(TeamMember, user=user, team=team)
+        team_member.delete()
+    return redirect('/commandtask/')
 def commandid(request, id):
+
+    team = get_object_or_404(Team, id=id)
+
+    team_all = TeamMember.objects.filter(team=team)
+
+    task_list = Task.objects.filter(team=team)
+    teams = TeamMember.objects.filter(team=team)
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            form.save()
+            task = form.save(commit=False)
+            task.team = team
+            task.save()
     form = TaskForm()
     team = Team.objects.filter(id=id).first()
     cur_user = get_object_or_404(User, Email=request.session['email'])
     tm = TeamMember.objects.filter(user=cur_user, team=team).first()
     role = tm.role.id
-    return render(request, 'panel/commandid.html', {'team': team, 'role':  role, 'form': form})
+    users_not_in_team = User.objects.exclude(id__in=TeamMember.objects.values('user'))
+
+
+    return render(request, 'panel/commandid.html', {'team': team, 'role':  role, 'form': form, 'teams': teams, 'id': id, 'users_not_in_team': users_not_in_team, 'task_list': task_list, 'team_all': team_all})
+
+def add_team_member(request):
+    if request.method == 'POST':
+        t = TeamMember()
+        t.team = get_object_or_404(Team, id=request.POST['id_team'])
+        t.user = get_object_or_404(User, id=request.POST['id_user'])
+
+        t.save()
+        return redirect('/command/'+request.POST['id_team'])
+
+def add_team(request):
+    if request.method == 'POST':
+        id_team = request.POST['id_team']
+        team = get_object_or_404(Team, id=id_team)
+        user =get_object_or_404(User, Email=request.session['email'])
+        t = TeamMember()
+        t.team = team
+        t.user = user
+        t.save()
+    return redirect('/commandtask/')
+
+def start_task(request):
+    if request.method == 'POST':
+        id_team =  request.POST['id_team']
+        id_task = request.POST['id_task']
+        task = get_object_or_404(Task, id=id_task)
+        task.Status = '1'
+        task.save()
+    return redirect('/command/' + id_team)
+
+
+def stop_task(request):
+    if request.method == 'POST':
+        id_team =  request.POST['id_team']
+        id_task = request.POST['id_task']
+        task = get_object_or_404(Task, id=id_task)
+        task.Status = '2'
+        task.save()
+    return redirect('/command/' + id_team)
+
+def deleteid(request, id):
+    user = get_object_or_404(User, Email=request.session['email'])
+    team_member = get_object_or_404(TeamMember, team_id=id, user=user)
+    team_member.delete()
+    Team.objects.get(id=id).delete()
+    return redirect('/commandtask/')
+
+def add_admin(request):
+    if request.method == 'POST':
+        id = request.POST['id']
+        role = get_object_or_404(Role, id=1)
+        task = get_object_or_404(TeamMember, id=id)
+        task.role = role
+        task.save()
+    return redirect('/command/' + request.POST['idm'])
+
+def mytask(request):
+    user = User.objects.get(Email=request.session['email'])
+    teams = Team.objects.filter(teammember__user=user, teammember__role=1)
+    return render(request, 'panel/my.html',
+                  {'teams': teams})

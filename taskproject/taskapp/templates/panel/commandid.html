@@ -2,17 +2,156 @@
 {% block title  %}Авторизация{% endblock %}
 {% block content  %}
 <style>
-
+.show_b1, .list_users, .my_list_task{
+    display: none;
+}
 </style>
 {% include 'panel/menu.html' %}
+
 <p><b>Команда</b> {{team.TeamName}} <b>Дата создания</b> {{team.CreationDate|date:"d-m-Y"}}</p>
+<ul>
+    <li>
+        <a href="#" class="add_show_2">Участники команды</a>
+    </li>
+    <li>
+        <a href="#" class="add_show_3">Мои задач</a>
+    </li>
+    {% if role == 1 %}
+     <li>
+        <a href="#" class="add_show_1">Добавить задачу</a>
+    </li>
+    {% endif %}
+</ul>
 {% if role == 1 %}
 
-<form method="post">
+<form method="post" class="show_b1">
+    <h3 align="center">Добавить задачу</h3>
     {% csrf_token %}
-    {{ form.as_p }}
+
+
+
+
+    <p>Title {{ form.Title }}</p>
+    <p>Description {{ form.Description }}</p>
+    <p>Priority {{ form.Priority }}</p>
+    <p>Start {{ form.Start }}</p>
+    <p>End {{ form.End }}</p>
+    <p>AssignedUser
+            <select name="AssignedUser" required="" id="id_AssignedUser">
+                {% for i in team_all %}
+                <option value="{{i.user.id}}">{{i.user.LastName}} {{i.user.FirstName}}</option>
+                {% endfor %}
+            </select>
+    </p>
     <p align="center"><button>Создать задачу</button></p>
 </form>
+<script>
+    let m1 = false;
+    $('.add_show_1').on('click', function(){
 
+        if(m1==false){
+            $('.show_b1').show();
+            m1 = true;
+        }else{
+            $('.show_b1').hide();
+            m1 = false;
+        }
+    });
+</script>
 {% endif %}
+<div class="list_users">
+    <h3 align="center">Список участников</h3>
+    <ul>
+    {% for team in teams %}
+        <li>{{team.user.LastName}} {{team.user.FirstName}} роль - {{team.role.role}}
+        {% if role == 1 %}
+            {% if team.role.id != 1 %}
+             <form method="post" action="{% url 'add_admin' %}">
+                {% csrf_token %}
+                 <input type="hidden" name="id" value="{{team.id}}">
+                 <input type="hidden" name="idm" value="{{id}}">
+                <button>Сделать админом</button>
+            </form>
+            {% endif %}
+
+            {% endif %}
+        </li>
+    {% endfor %}
+        {% if role == 1 %}
+    <form method="post" action="{% url 'add_team_member' %}" style="text-align: center">
+        <input type="hidden" name="id_team" value="{{id}}">
+      {% csrf_token %}
+
+
+      <select name="id_user">
+          {% for i in users_not_in_team %}
+          <option value="{{i.id}}">{{i.FirstName }}</option>
+          {% endfor %}
+      </select>
+      <button type="submit">Добавить участника</button>
+    </form>
+        {% endif %}
+    </ul>
+</div>
+<div class="my_list_task">
+    <ol>
+        {% for i in task_list %}
+        {% if i.AssignedUser.Email == request.session.email %}
+                <li><b>Название задачи</b> {{i.Title}} <b>Описание задачи</b> {{i.Description}} <b>Статус</b>
+        <b>Дата и время начала </b> {{i.Start}} <b>Дата и время завершения</b> {{i.End}}
+                 {% if i.End < now %}
+                Проcрочено
+            {% else %}
+                  {% if i.Status == '0' %}
+                     <form action="{% url 'start_task' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id_task" value="{{i.id}}">
+                         <input type="hidden" name="id_team" value="{{id}}">
+                        <button>Начать</button>
+                    </form>
+                    {% endif %}
+                    {% if i.Status == '1' %}
+                     <form action="{% url 'stop_task' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id_task" value="{{i.id}}">
+                         <input type="hidden" name="id_team" value="{{id}}">
+                        <button>Остановить</button>
+                    </form>
+                    {% endif %}
+                    {% if i.Status == '2' %}
+                    <span style="color: green">Выполнена</span>
+                    {% endif %}
+            {% endif %}
+                </li>
+        {% endif %}
+        {% endfor %}
+
+    </ol>
+</div>
+<script>
+     let m2 = false;
+    $('.add_show_2').on('click', function(){
+
+        if(m2==false){
+            $('.list_users').show();
+            m2 = true;
+        }else{
+            $('.list_users').hide();
+            m2 = false;
+        }
+    });
+    let m3 = false;
+    $('.add_show_3').on('click', function(){
+
+        if(m3==false){
+            $('.my_list_task').show();
+            m3 = true;
+        }else{
+            $('.my_list_task').hide();
+            m3 = false;
+        }
+    });
+
+
+</script>
 {% endblock %}

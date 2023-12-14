@@ -25,5 +25,13 @@ urlpatterns = [
     path('logout/', logout, name='logout'),
     path('subscribers/', subscribers, name='subscribers'),
     path('commandtask/', commandtask, name='commandtask'),
-    path('command/<int:id>', commandid)
+    path('command/<int:id>', commandid),
+    path('add_team_member/', add_team_member, name='add_team_member'),
+    path('add_team/', add_team, name='add_team_user'),
+    path('delete_team_user/', delete_team_user, name='delete_team_user'),
+    path('start_task/', start_task, name='start_task'),
+    path('stop_task/', stop_task, name='stop_task'),
+    path('delete/<int:id>', deleteid, name='deleteid'),
+    path('add_admin/', add_admin, name='add_admin'),
+    path('mytask/', mytask, name='mytask')
 ]

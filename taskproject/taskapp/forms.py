@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Review, Task, Team
+from .models import User, Review, Task, Team, TeamMember
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -28,7 +28,15 @@ class TaskForm(forms.ModelForm):
             'End': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
 
+
+
+
 class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
         fields = ['TeamName']
+
+class TeamMemberForm(forms.ModelForm):
+    class Meta:
+        model = TeamMember
+        fields = ['user']

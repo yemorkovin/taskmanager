@@ -5,4 +5,37 @@
 {% include 'panel/menu.html' %}
 {% endif %}
 <h1 align="center">Учебная версия Task Manager</h1>
+    <div style="width: 200px;margin: auto"><canvas id="taskCompletionChart"></canvas></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    var ctx = document.getElementById('taskCompletionChart').getContext('2d');
+
+    var completedTasksCount = {{ completed_tasks_count }};
+    var remainingTasksCount = {{completed_tasks_count_2}} - completedTasksCount;
+
+    var data = {
+        labels: ['Выполнено', 'Невыполнено'],
+        datasets: [{
+            data: [completedTasksCount, remainingTasksCount],
+            backgroundColor: ['#36A2EB', '#FFCE56'],
+        }],
+    };
+
+    var options = {
+        legend: {
+            display: true,
+            position: 'bottom',
+        },
+    };
+
+    var taskCompletionChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: options,
+    });
+});
+
+    </script>
 {% endblock %}
