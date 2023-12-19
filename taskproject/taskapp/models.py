@@ -6,10 +6,10 @@ class RoleUser(models.Model):
     def __str__(self):
         return f"{self.role}"
 class User(models.Model):
-    LastName = models.CharField(max_length=50)
-    FirstName = models.CharField(max_length=50)
+    LastName = models.CharField(max_length=50, verbose_name='Фамилия')
+    FirstName = models.CharField(max_length=50, verbose_name='Имя')
     Email = models.EmailField(unique=True)
-    HashedPassword = models.CharField(max_length=200)
+    HashedPassword = models.CharField(max_length=200, verbose_name='Пароль')
     CreationDate = models.DateTimeField(auto_now=True)
     Role = models.ForeignKey(RoleUser, on_delete=models.CASCADE, default=1)
 
@@ -59,9 +59,21 @@ class TaskContent(models.Model):
         return f"Content for Task {self.TaskID.Title}"
 
 class Review(models.Model):
-    author = models.CharField(max_length=100)
-    text = models.TextField()
+    author = models.CharField(max_length=100, verbose_name='Укажите имя')
+    text = models.TextField(verbose_name='Введите текст отзыва...')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.author
+
+
+class MyTask(models.Model):
+    Title = models.CharField(max_length=255)
+    Description = models.TextField(blank=True)
+    Status = models.CharField(max_length=50, default=0)
+    Priority = models.IntegerField()
+    Start = models.DateTimeField()
+    End = models.DateTimeField()
+    AssignedUser = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    def __str__(self):
+        return self.Title

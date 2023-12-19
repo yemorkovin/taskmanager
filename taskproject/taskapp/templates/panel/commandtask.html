@@ -6,10 +6,22 @@ p{
     text-align: left;
 }
 </style>
-{% include 'panel/menu.html' %}
-<div style="display: flex">
+<div style="display: flex;width: 1200px; margin: auto; font-size: 12px">
+    <div style="width: 50%">
+        {% include 'panel/menu.html' %}
+    </div>
+    <div style="width: 50%">
+
+    </div>
+</div>
+<div style="display: flex;width: 1200px; margin: auto; font-size: 12px">
+
+        <div style="display: flex; border: 3px solid #000; width: 50%; border-radius: 15px; padding: 15px">
     <div style="width: 50%">
         <h2>Доступные команды</h2>
+        {% if teams_all.count == 0 %}
+            Нет доступных команд
+        {% endif %}
         <ul>
         {% for i in teams_all %}
         <li>
@@ -22,24 +34,31 @@ p{
         </li>
         {% endfor %}
             </ul>
-
+        <hr >
 
          <h2>Команды в котороых находится</h2>
+        {% if teams_vs.count == 0 %}
+            Нет команд
+        {% endif %}
         <ul>
         {% for i in teams_vs %}
         <li>
             <form action="{% url 'delete_team_user' %}" method="post">
-                {{i.TeamName}}
+                <a href="/command/{{i.id}}">{{i.TeamName}}</a>
                 {% csrf_token %}
                 <input type="hidden" name="id_team" value="{{i.id}}">
-                <button>Удалить</button> <a href="/command/{{i.id}}">Зайти</a>
+                <button>Удалить</button>
             </form>
         </li>
         {% endfor %}
             </ul>
+        <hr >
     </div>
     <div style="width: 50%">
         <h2>Мои команды</h2>
+         {% if teams.count == 0 %}
+            Нет команд
+        {% endif %}
         <ul>
             {% for team in teams %}
                 <li><a href="/command/{{team.id}}">{{team.TeamName}}</a>
@@ -48,6 +67,7 @@ p{
 
             {% endfor %}
         </ul>
+        <hr >
 
         <h2>Добавить команду</h2>
         <form method="post">
@@ -55,8 +75,47 @@ p{
         {{ form.as_p }}
         <button>Добавить</button>
     </form>
+
+    </div>
+
+</div>
+    <div style="width: 50%">
+        <br />
+        <div style="width: 80%;margin: auto"><canvas id="taskCompletionChart"></canvas></div>
+
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    var ctx = document.getElementById('taskCompletionChart').getContext('2d');
+
+
+
+    var data = {
+        labels: ['Мои команды', 'Команды в которых нахожусь', 'Доступные'],
+        datasets: [{
+            data: [{{teams.count}}, {{teams_vs.count}}, {{teams_all.count}}],
+            backgroundColor: ['#f00', '#00f', '#0f0'],
+        }],
+    };
+
+    var options = {
+        legend: {
+            display: true,
+            position: 'bottom',
+        },
+    };
+
+    var taskCompletionChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: options,
+    });
+});
+
+    </script>
 
 {% endblock %}

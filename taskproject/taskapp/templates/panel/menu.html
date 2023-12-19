@@ -1,12 +1,19 @@
 <ul class="panel_menu">
     <li>
-        <a href="/mytask/">
-            Личный тасктрекер
+        <a {% if request.path == '/panel/' %} class="active"{% endif %} href="/panel/">
+            Личный
         </a>
     </li>
      <li>
-        <a href="/commandtask/">
-            Командный тасктрекер
+        <a {% if request.path == '/commandtask/' or request.path|slice:'-1' == '/command/' %} class="active"{% endif %} href="/commandtask/">
+            Командный
         </a>
     </li>
+    {% if 'email' in request.session %}
+            <li>
+                <a  href="{% url 'logout' %}">
+                    Выход
+                </a>
+            </li>
+            {% endif %}
 </ul>

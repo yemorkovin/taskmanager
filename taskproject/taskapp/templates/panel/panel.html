@@ -1,7 +1,117 @@
 {% extends 'main.html' %}
 {% block title  %}Авторизация{% endblock %}
 {% block content  %}
-{% include 'panel/menu.html' %}
-<h3 align="center">Привет, {{user.LastName}} {{user.FirstName}}</h3>
-<br />
+
+
+<div style="display: flex; width: 1200px; margin: auto; font-size: 12px">
+    <div style="width: 50%">
+        {% include 'panel/menu.html' %}
+        {% for task in tasks %}
+        <div style="border: 3px solid #000; border-radius: 15px; display: flex; padding: 10px">
+
+            <div style="width: 60%">
+                <p>{{task.Title}}</p>
+                <p>{{task.Description}}</p>
+            </div>
+            <div style="width: 40%">
+                <p>Приоритет: P{{task.Priority}}</p>
+                <p>
+
+                      {% if now|date:"U" > task.End|date:"U" %}
+                Статус: Проcрочено
+            {% else %}
+
+                  {% if task.Status == '0' %}
+
+                     <form action="/startuser/" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id_task" value="{{task.id}}">
+                        Статус: Не начата <button>Начать</button>
+                    </form>
+                    {% endif %}
+                    {% if task.Status == '1' %}
+                     <form action="/stopuser/" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id_task" value="{{task.id}}">
+                        Статус: Запущена<button>Остановить</button>
+                    </form>
+                        {% endif %}
+                        {% if task.Status == '2' %}
+                           Статус:  <span style="color: green">Выполнена</span>
+                        {% endif %}
+                    {% endif %}
+                </p>
+                <p>Время: {{task.Start|date:'Y-m-d H:i'}} - {{task.End|date:'Y-m-d H:i'}}</p>
+            </div>
+            <span>
+                <form action="/deleteitemid/" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="id_task" value="{{task.id}}">
+                    <button>X</button>
+                </form>
+            </span>
+        </div><br />
+        {% endfor %}
+        <br />
+        <div class="form_addd">
+            <form method="post" class="show_b1">
+                {% csrf_token %}
+                <div style="display: flex; width: 100%">
+                     <div style="width: 45%">
+                         <p>Введите название задачи<br />{{ form.Title }}</p>
+                        <p>Введите описание задачи {{ form.Description }}</p>
+                        <p>Установите приоритет: {{ form.Priority }}</p>
+                    </div>
+                    <div style="width: 55%; margin-left: 45px;">
+                        <p align="center" style="text-align: right;"><button class="vvffff">Создать задачу</button></p>
+                        <br /><br /><br /><br /><br /><br /><br /><br />
+                        <p>Установите время:</p>
+                        <p>Начало {{ form.Start }}</p>
+                        <p>Конец {{ form.End }}</p>
+
+                    </div>
+                </div>
+
+
+
+            </form>
+        </div>
+
+    </div>
+    <div style="width: 50%">
+        <br />
+        <div style="width: 80%;margin: auto"><canvas id="taskCompletionChart"></canvas></div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    var ctx = document.getElementById('taskCompletionChart').getContext('2d');
+
+
+
+    var data = {
+        labels: ['Не начата', 'Запущена', 'Выполнена'],
+        datasets: [{
+            data: [{{task_1}}, {{task_2}}, {{task_3}}],
+            backgroundColor: ['#f00', '#00f', '#0f0'],
+        }],
+    };
+
+    var options = {
+        legend: {
+            display: true,
+            position: 'bottom',
+        },
+    };
+
+    var taskCompletionChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: options,
+    });
+});
+
+    </script>
 {% endblock %}

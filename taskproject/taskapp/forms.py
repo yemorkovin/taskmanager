@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, Review, Task, Team, TeamMember
+from .models import User, Review, Task, Team, TeamMember, MyTask
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -19,6 +19,15 @@ class ReviewForm(forms.ModelForm):
         fields = ['author', 'text']
 
 class TaskForm(forms.ModelForm):
+    PRIORITY_CHOICES = [
+        (1, 'P1'),
+        (2, 'P2'),
+        (3, 'P3'),
+    ]
+    Priority = forms.ChoiceField(
+        choices=PRIORITY_CHOICES,
+        widget=forms.RadioSelect(attrs={'class': 'radio-inline'}),
+    )
     class Meta:
         model = Task
         fields = ['Title', 'Description', 'Priority', 'Start', 'End', 'AssignedUser']
@@ -32,6 +41,7 @@ class TaskForm(forms.ModelForm):
 
 
 class TeamForm(forms.ModelForm):
+
     class Meta:
         model = Team
         fields = ['TeamName']
@@ -40,3 +50,22 @@ class TeamMemberForm(forms.ModelForm):
     class Meta:
         model = TeamMember
         fields = ['user']
+
+class AddTaskuser(forms.ModelForm):
+    PRIORITY_CHOICES = [
+        (1, 'P1'),
+        (2, 'P2'),
+        (3, 'P3'),
+    ]
+    Priority = forms.ChoiceField(
+        choices=PRIORITY_CHOICES,
+        widget=forms.RadioSelect(attrs={'class': 'radio-inline'}),
+    )
+    class Meta:
+        model = MyTask
+        fields = ['Title', 'Description','Priority','Start','End']
+
+        widgets = {
+            'Start': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'End': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }

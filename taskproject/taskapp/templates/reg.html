@@ -3,7 +3,7 @@
 {% block content  %}
 <h2 align="center">Регистрация</h2>
 <div style="width: 300px; margin: auto">
-  <form method="post" action="{% url 'registration_view' %}">
+  <form method="post" action="{% url 'registration_view' %}" class="reg">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Зарегистрироваться</button>

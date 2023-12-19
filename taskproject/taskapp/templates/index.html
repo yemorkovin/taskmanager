@@ -1,11 +1,22 @@
 {% extends 'main.html' %}
 {% block title  %}Главная страница{% endblock %}
 {% block content  %}
-{% if 'email' in request.session %}
-{% include 'panel/menu.html' %}
-{% endif %}
-<h1 align="center">Учебная версия Task Manager</h1>
-    <div style="width: 200px;margin: auto"><canvas id="taskCompletionChart"></canvas></div>
+
+<div class="flex_main">
+    <div class="flex_main_item">
+        <p>SliceTheDay - это новый подход к управлению временем.</p>
+        <p>Составьте план на день, управляйте рабочим временем сотрудников, отслеживайте статус задач - всё это в сервисе SliceTheDay.</p>
+        <div class="btn_main">
+            <a href="/reg/">зарегистрироваться</a>
+             <a href="/auth/">войти</a>
+        </div>
+    </div>
+    <div class="flex_main_item">
+        <img src="/static/img/lk.png" width="100%">
+    </div>
+</div>
+
+    <!--<div style="width: 200px;margin: auto"><canvas id="taskCompletionChart"></canvas></div>-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>

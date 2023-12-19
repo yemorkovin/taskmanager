@@ -78,16 +78,31 @@ def logout(request):
         del request.session['email']
     return redirect('/')
 def panel(request):
-    user = get_object_or_404(User, Email=request.session['email'])
-    return render(request, 'panel/panel.html', {'user':user})
+    if 'email' in request.session:
+        user = get_object_or_404(User, Email=request.session['email'])
+        if request.method == 'POST':
+            form = AddTaskuser(request.POST)
+            if form.is_valid():
+                task = form.save(commit=False)
+                task.AssignedUser = user
+                task.save()
+        form = AddTaskuser()
+        now = datetime.now()
+        tasks = MyTask.objects.filter(AssignedUser=user)
 
+        task_1 = MyTask.objects.filter(AssignedUser=user, Status='0').count()
+        task_2 = MyTask.objects.filter(AssignedUser=user, Status='1').count()
+        task_3 = MyTask.objects.filter(AssignedUser=user, Status='2').count()
+        user = get_object_or_404(User, Email=request.session['email'])
+        return render(request, 'panel/panel.html', {'user':user, 'form': form, 'tasks': tasks, 'now': now, 'task_1': task_1, 'task_2': task_2, 'task_3': task_3})
+    else:
+        return redirect('/reg/')
 def commandtask(request):
     user = User.objects.get(Email=request.session['email'])
     teams = Team.objects.filter(teammember__user=user, teammember__role=1)
     teams_vs = Team.objects.filter(teammember__user=user, teammember__role=2)
     teams_all = Team.objects.exclude(teammember__user=user)
     #teams_all = Team.objects.filter(teammember__isnull=False).distinct()
-
     if request.method == 'POST':
         form = TeamForm(request.POST)
         if form.is_valid():
@@ -120,6 +135,10 @@ def commandid(request, id):
     team_all = TeamMember.objects.filter(team=team)
 
     task_list = Task.objects.filter(team=team)
+    task_1 = task_list.filter(Status=0).count()
+    task_2 = task_list.filter(Status=1).count()
+    task_3 = task_list.filter(Status=2).count()
+
     teams = TeamMember.objects.filter(team=team)
     if request.method == 'POST':
         form = TaskForm(request.POST)
@@ -131,11 +150,14 @@ def commandid(request, id):
     team = Team.objects.filter(id=id).first()
     cur_user = get_object_or_404(User, Email=request.session['email'])
     tm = TeamMember.objects.filter(user=cur_user, team=team).first()
+
+
+
     role = tm.role.id
     users_not_in_team = User.objects.exclude(id__in=TeamMember.objects.values('user'))
 
-
-    return render(request, 'panel/commandid.html', {'team': team, 'role':  role, 'form': form, 'teams': teams, 'id': id, 'users_not_in_team': users_not_in_team, 'task_list': task_list, 'team_all': team_all})
+    print(task_1)
+    return render(request, 'panel/commandid.html', {'task_1': task_1,'task_2': task_2,'task_3': task_3, 'team': team, 'role':  role, 'form': form, 'teams': teams, 'id': id, 'users_not_in_team': users_not_in_team, 'task_list': task_list, 'team_all': team_all, 'tm': tm})
 
 def add_team_member(request):
     if request.method == 'POST':
@@ -197,3 +219,32 @@ def mytask(request):
     teams = Team.objects.filter(teammember__user=user, teammember__role=1)
     return render(request, 'panel/my.html',
                   {'teams': teams})
+
+def startuser(request):
+    if request.method == 'POST':
+        id_task = request.POST['id_task']
+        task = get_object_or_404(MyTask, id=id_task)
+        task.Status = '1'
+        task.save()
+    return redirect('/panel/')
+
+def stopuser(request):
+    if request.method == 'POST':
+        id_task = request.POST['id_task']
+        task = get_object_or_404(MyTask, id=id_task)
+        task.Status = '2'
+        task.save()
+    return redirect('/panel/')
+
+def deleteitemid(request):
+    if request.method == 'POST':
+        id_task = request.POST['id_task']
+        MyTask.objects.filter(id=id_task).delete()
+    return redirect('/panel/')
+
+def deleteitemidc(request):
+    if request.method == 'POST':
+        id_team = request.POST['id_team']
+        id_task = request.POST['id_task']
+        Task.objects.filter(id=id_task).delete()
+    return redirect('/command/' + id_team)

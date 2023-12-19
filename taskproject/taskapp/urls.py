@@ -33,5 +33,9 @@ urlpatterns = [
     path('stop_task/', stop_task, name='stop_task'),
     path('delete/<int:id>', deleteid, name='deleteid'),
     path('add_admin/', add_admin, name='add_admin'),
-    path('mytask/', mytask, name='mytask')
+    path('mytask/', mytask, name='mytask'),
+    path('startuser/', startuser, name='startuser'),
+    path('stopuser/', stopuser, name='stopuser'),
+    path('deleteitemid/', deleteitemid, name='deleteitemid'),
+    path('deleteitemidc/', deleteitemidc, name='deleteitemidc')
 ]
